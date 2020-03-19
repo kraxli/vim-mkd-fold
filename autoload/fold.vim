@@ -106,11 +106,13 @@ function! fold#FoldLevelOfLine(lnum)
   endif
 
   " === Folding Math ===
-  if cur_syntax_group =~? 'texMathZone' && prv_syntax_group !~? 'texMathZone' && nxt_syntax_group =~? 'texMathZone'
+  let is_texMathZone_boundry = cur_syntax_group =~? 'texMathZone' || cur_syntax_group =~? 'Delimeter'
+
+  if is_texMathZone_boundry && prv_syntax_group !~? 'texMathZone' && nxt_syntax_group =~? 'texMathZone'
     return 'a1'
   endif
 
-  if cur_syntax_group =~? 'texMathZone' && nxt_syntax_group !~? 'texMathZone'
+  if is_texMathZone_boundry && nxt_syntax_group !~? 'texMathZone' && prv_syntax_group =~? 'texMathZone'
     return 's1'
   endif
 
