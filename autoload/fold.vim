@@ -10,12 +10,12 @@
 
 let s:header_pattern = g:mkdd_header_pattern
 
-if !exists('g:list_ini_indent')
-  let g:list_ini_indent = 0
+if !exists('s:list_ini_indent')
+  let s:list_ini_indent = 0
 endif
 
-if !exists('g:list_ini_fold')
-  let g:list_ini_fold = 0
+if !exists('s:list_ini_fold')
+  let s:list_ini_fold = 0
 endif
 
 
@@ -38,7 +38,7 @@ function! fold#FoldLevelOfLine(lnum)
   " ------- folding atx headers ------
   if match(cur_line, s:header_pattern) >= 0
     let s:header_level = strlen(substitute(cur_line, '^\(#\{1,6}\).*', '\1', ''))
-    let g:header_level = s:header_level
+    let s:header_level = s:header_level
     return '>' . s:header_level
   endif
 
@@ -57,22 +57,22 @@ function! fold#FoldLevelOfLine(lnum)
     " initial list indent level / each new list starts after an empty line
     " or a header (consistent with pandoc)
     if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0
-      let g:list_ini_indent = cur_indent
-      let g:list_ini_fold =  (g:header_level + 1)
-      return '>' . g:list_ini_fold
+      let s:list_ini_indent = cur_indent
+      let s:list_ini_fold =  (s:header_level + 1)
+      return '>' . s:list_ini_fold
     endif
 
     let cur_fold_diff = (cur_indent - prv_indent)/&shiftwidth
     let nxt_fold_diff =  (nxt_indent - cur_indent)/&shiftwidth
 
-    return '>' . (g:list_ini_fold + (cur_indent-g:list_ini_indent)/&shiftwidth)
+    return '>' . (s:list_ini_fold + (cur_indent-s:list_ini_indent)/&shiftwidth)
 
   endif
 
   " === Folding Code ===
   " if cur_syntax_group =~? 'mkdCodeStart'
   "   " return 'a1'
-  "   return '> ' . (g:header_level + 1)
+  "   return '> ' . (s:header_level + 1)
   " endif
   "
   " if cur_syntax_group =~? 'mkdCodeEnd'
@@ -83,7 +83,7 @@ function! fold#FoldLevelOfLine(lnum)
   " folding fenced code blocks
   if match(cur_line, '^\s*```') >= 0
     if nxt_syntax_group ==? 'markdownFencedCodeBlock' || nxt_syntax_group =~? 'mkdCode' || nxt_syntax_group =~? 'mkdSnippet'
-      return '> ' . (g:header_level + 1)
+      return '> ' . (s:header_level + 1)
     endif
     return 's1'
   endif
