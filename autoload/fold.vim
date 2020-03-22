@@ -112,7 +112,8 @@ function! fold#FoldLevelOfLine(lnum)
     return 'a1'
   endif
 
-  if is_texMathZone_boundry && nxt_syntax_group !~? 'texMathZone' && prv_syntax_group =~? 'texMathZone' " && nxt_syntax_group !~? 'mkdListItem'
+  if is_texMathZone_boundry && nxt_syntax_group !~? 'texMathZone' && prv_syntax_group =~? 'texMathZone' && nxt_syntax_group ==? ''
+    " && nxt_syntax_group !~? 'mkdListItem'
     return 's1'
   endif
 
