@@ -10,18 +10,18 @@
 
 let s:header_pattern = g:mkdd_header_pattern
 
-if !exists('s:list_ini_indent')
-  let s:list_ini_indent = 0
+if !exists('b:list_ini_indent')
+  let b:list_ini_indent = 0
 endif
 
-if !exists('s:list_ini_fold')
-  let s:list_ini_fold = 0
+if !exists('b:list_ini_fold')
+  let b:list_ini_fold = 0
 endif
 
 
 function! fold#FoldLevelOfLine(lnum)
 
-   " stop if file has one line only
+  " stop if file has one line only
   if line('$') <= 1
     return -1
   endif
@@ -56,16 +56,16 @@ function! fold#FoldLevelOfLine(lnum)
 
     " initial list indent level / each new list starts after an empty line
     " or a header (consistent with pandoc)
-    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0
-      let s:list_ini_indent = cur_indent
-      let s:list_ini_fold =  (s:header_level + 1)
-      return '>' . s:list_ini_fold
+    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode'
+      let b:list_ini_indent = cur_indent
+      let b:list_ini_fold =  (s:header_level + 1)
+      return '>' . b:list_ini_fold
     endif
 
     let cur_fold_diff = (cur_indent - prv_indent)/&shiftwidth
     let nxt_fold_diff =  (nxt_indent - cur_indent)/&shiftwidth
 
-    return '>' . (s:list_ini_fold + (cur_indent-s:list_ini_indent)/&shiftwidth)
+    return '>' . (b:list_ini_fold + (cur_indent-b:list_ini_indent)/&shiftwidth)
 
   endif
 
@@ -112,7 +112,7 @@ function! fold#FoldLevelOfLine(lnum)
     return 'a1'
   endif
 
-  if is_texMathZone_boundry && nxt_syntax_group !~? 'texMathZone' && prv_syntax_group =~? 'texMathZone'
+  if is_texMathZone_boundry && nxt_syntax_group !~? 'texMathZone' && prv_syntax_group =~? 'texMathZone' " && nxt_syntax_group !~? 'mkdListItem'
     return 's1'
   endif
 
