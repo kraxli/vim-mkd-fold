@@ -58,27 +58,20 @@ function! fold#FoldLevelOfLine(lnum)
     " or a header (consistent with pandoc)
     if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode'
       let b:list_ini_indent = cur_indent
-      let b:list_ini_fold =  (s:header_level + 1)
-      return '>' . b:list_ini_fold
+      let b:list_ini_fold =  s:header_level " (s:header_level + 1)
+      " return '>' . b:list_ini_fold
+      return b:list_ini_fold
     endif
 
     let cur_fold_diff = (cur_indent - prv_indent)/&shiftwidth
     let nxt_fold_diff =  (nxt_indent - cur_indent)/&shiftwidth
 
-    return '>' . (b:list_ini_fold + (cur_indent-b:list_ini_indent)/&shiftwidth)
+    " return '>' . (b:list_ini_fold + (cur_indent-b:list_ini_indent)/&shiftwidth)
+    return (b:list_ini_fold + (cur_indent-b:list_ini_indent)/&shiftwidth)
 
   endif
 
   " === Folding Code ===
-  " if cur_syntax_group =~? 'mkdCodeStart'
-  "   " return 'a1'
-  "   return '> ' . (s:header_level + 1)
-  " endif
-  "
-  " if cur_syntax_group =~? 'mkdCodeEnd'
-  "   return 's1'
-  " endif
-  "
 
   " folding fenced code blocks
   if match(cur_line, '^\s*```') >= 0
