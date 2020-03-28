@@ -37,8 +37,7 @@ function! fold#FoldLevelOfLine(lnum)
 
   " ------- folding atx headers ------
   if match(cur_line, s:header_pattern) >= 0
-    let s:header_level = strlen(substitute(cur_line, '^\(#\{1,6}\).*', '\1', ''))
-    let s:header_level = s:header_level
+    let s:header_level = strlen(substitute(cur_line, g:mkdd_header_pattern . '.*', '\1', ''))
     return '>' . s:header_level
   endif
 
@@ -59,12 +58,21 @@ function! fold#FoldLevelOfLine(lnum)
     if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode'
       let b:list_ini_indent = cur_indent
       let b:list_ini_fold =  s:header_level " (s:header_level + 1)
-      " return '>' . b:list_ini_fold
-      return b:list_ini_fold
+      " return b:list_ini_fold
     endif
 
     let cur_fold_diff = (cur_indent - prv_indent)/&shiftwidth
     let nxt_fold_diff =  (nxt_indent - cur_indent)/&shiftwidth
+
+    " following sublist
+    if nxt_fold_diff > 0
+      return '>' . (b:list_ini_fold + (nxt_indent-b:list_ini_indent)/&shiftwidth)
+    endif
+
+    " initial list fold in case no sublist following
+    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode'
+      return b:list_ini_fold
+    endif
 
     " return '>' . (b:list_ini_fold + (cur_indent-b:list_ini_indent)/&shiftwidth)
     return (b:list_ini_fold + (cur_indent-b:list_ini_indent)/&shiftwidth)

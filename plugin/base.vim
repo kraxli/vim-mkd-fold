@@ -4,6 +4,6 @@ if !exists('g:markdown_list_folding')
 endif
 
 if !exists('g:mkdd_header_pattern')
-  let g:mkdd_header_pattern = '^#\{1,6}\s'
+  let g:mkdd_header_pattern = '^\s*\(#\{1,6}\)'
 endif
 
