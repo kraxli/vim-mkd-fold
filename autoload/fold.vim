@@ -46,6 +46,13 @@ function! fold#FoldLevelOfLine(lnum)
       return (s:header_level)
   endif
 
+  " " ---- net line is list itme ----
+  " if nxt_syntax_group  =~? 'mkdListItem' && match(prv_line, '^\s*$') < 0 && cur_syntax_group !~? 'mkdListItem'
+  "   " let b:list_ini_indent = cur_indent
+  " ...
+  " let b:list_ini_fold = foldlevel(a:lnum-1) " s:header_level " (s:header_level + 1)
+  " endif
+
   " ---------- Folding Lists -----------
   if cur_syntax_group =~? 'mkdListItem' && g:markdown_list_folding == 1
 
@@ -56,6 +63,7 @@ function! fold#FoldLevelOfLine(lnum)
     " initial list indent level / each new list starts after an empty line
     " or a header (consistent with pandoc)
     if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode'
+    " if prv_syntax_group !~? 'mkdListItem'
       let b:list_ini_indent = cur_indent
       let b:list_ini_fold =  s:header_level " (s:header_level + 1)
       " return b:list_ini_fold
