@@ -62,7 +62,7 @@ function! fold#FoldLevelOfLine(lnum)
 
     " initial list indent level / each new list starts after an empty line
     " or a header (consistent with pandoc)
-    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode'
+    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode' || prv_line =~? 'markdownCode'
     " if prv_syntax_group !~? 'mkdListItem'
       let b:list_ini_indent = cur_indent
       let b:list_ini_fold =  s:header_level " (s:header_level + 1)
@@ -78,7 +78,7 @@ function! fold#FoldLevelOfLine(lnum)
     endif
 
     " initial list fold in case no sublist following
-    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode'
+    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode' || prv_line =~? 'markdownCode'
       return b:list_ini_fold
     endif
 
@@ -91,13 +91,13 @@ function! fold#FoldLevelOfLine(lnum)
 
   " folding fenced code blocks
   if match(cur_line, '^\s*```') >= 0
-    if nxt_syntax_group ==? 'markdownFencedCodeBlock' || nxt_syntax_group =~? 'mkdCode' || nxt_syntax_group =~? 'mkdSnippet'
+    if nxt_syntax_group ==? 'markdownFencedCodeBlock' || nxt_syntax_group =~? 'mkdCode' || nxt_syntax_group =~? 'mkdSnippet' || nxt_syntax_group =~? 'markdownCode'
       return '> ' . (s:header_level + 1)
     endif
     return 's1'
   endif
 
-  if cur_syntax_group =~? 'mkdSnippet'
+  if cur_syntax_group =~? 'mkdSnippet' || cur_syntax_group =~? 'markdownCode'
     return '='
   endif
 
