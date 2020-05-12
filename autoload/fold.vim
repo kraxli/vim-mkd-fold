@@ -54,7 +54,7 @@ function! fold#FoldLevelOfLine(lnum)
   " endif
 
   " ---------- Folding Lists -----------
-  if cur_syntax_group =~? 'mkdListItem' && g:markdown_list_folding == 1
+  if (cur_syntax_group =~? 'mkdListItem' || cur_syntax_group =~? 'markdownList') && g:markdown_list_folding == 1
 
     let prv_indent = indent(a:lnum-1)
     let cur_indent = indent(a:lnum)
