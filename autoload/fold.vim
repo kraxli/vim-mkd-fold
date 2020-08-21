@@ -34,6 +34,13 @@ function! fold#FoldLevelOfLine(lnum)
   let cur_syntax_group = synIDattr(synID(a:lnum, 1, 1), 'name')
   let nxt_syntax_group = synIDattr(synID(a:lnum + 1, 1, 1), 'name')
 
+  if (cur_syntax_group =~? 'mkdxListItem' ||  cur_syntax_group =~? 'mkdListItem' ||  cur_syntax_group =~? 'markdownList')
+    let cur_syntax_group = 'mkddListItem'
+  endif
+
+  if (cur_syntax_group =~? 'mkdxListItemDone'  || cur_syntax_group =~? 'mkdListItemDone'  || cur_syntax_group =~? 'markdownListDone')
+    let cur_syntax_group = 'mkddListItemDone'
+  endif
 
   " ------- folding atx headers ------
   if match(cur_line, s:header_pattern) >= 0
@@ -54,7 +61,7 @@ function! fold#FoldLevelOfLine(lnum)
   " endif
 
   " ---------- Folding Lists -----------
-  if (cur_syntax_group =~? 'mkdListItem' || cur_syntax_group =~? 'markdownList') && g:markdown_list_folding == 1
+  if (cur_syntax_group =~? 'mkddListItem' || cur_syntax_group =~? 'mkddListItemDone') && g:markdown_list_folding == 1
 
     let prv_indent = indent(a:lnum-1)
     let cur_indent = indent(a:lnum)
@@ -62,7 +69,7 @@ function! fold#FoldLevelOfLine(lnum)
 
     " initial list indent level / each new list starts after an empty line
     " or a header (consistent with pandoc)
-    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode' || prv_line =~? 'markdownCode'
+    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode' || prv_line =~? 'markdownCode' || prv_line =~? 'mkdxCode'
     " if prv_syntax_group !~? 'mkdListItem'
       let b:list_ini_indent = cur_indent
       let b:list_ini_fold =  s:header_level " (s:header_level + 1)
@@ -78,7 +85,7 @@ function! fold#FoldLevelOfLine(lnum)
     endif
 
     " initial list fold in case no sublist following
-    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode' || prv_line =~? 'markdownCode'
+    if match(prv_line, '^\s*$') >= 0 || match(prv_line, s:header_pattern) >= 0 || prv_line =~? 'Delimiter' || prv_line =~? 'mkdCode' || prv_line =~? 'markdownCode' || prv_line =~? 'mkdxCode'
       return b:list_ini_fold
     endif
 
