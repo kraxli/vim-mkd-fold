@@ -43,7 +43,8 @@ function! fold#FoldLevelOfLine(lnum)
   endif
 
   " ------- folding atx headers ------
-  if match(cur_line, s:header_pattern) >= 0
+  if (cur_syntax_group =~? 'markdownHeadingDlimiter' || cur_syntax_group =~? 'markdownHead' || cur_syntax_group =~? 'mkdxHead')
+  " if match(cur_line, s:header_pattern) >= 0
     let s:header_level = strlen(substitute(cur_line, g:mkdd_header_pattern . '.*', '\1', ''))
     return '>' . s:header_level
   endif
