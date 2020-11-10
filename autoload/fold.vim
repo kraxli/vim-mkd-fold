@@ -34,24 +34,19 @@ function! fold#FoldLevelOfLine(lnum)
   let cur_syntax_group = synIDattr(synID(a:lnum, 1, 1), 'name')
   let nxt_syntax_group = synIDattr(synID(a:lnum + 1, 1, 1), 'name')
 
-  if (cur_syntax_group =~? 'mkdxListItem' ||  cur_syntax_group =~? 'mkdListItem' ||  cur_syntax_group =~? 'markdownList')
+  if (cur_syntax_group =~? 'mkdxListItem' ||  cur_syntax_group =~? 'mkdListItem' ||  cur_syntax_group =~? 'markdownList' || cur_syntax_group =~? 'VimwikiListTodo')
     let cur_syntax_group = 'mkddListItem'
   endif
 
-  if (cur_syntax_group =~? 'mkdxListItemDone'  || cur_syntax_group =~? 'mkdListItemDone'  || cur_syntax_group =~? 'markdownListDone')
+  if (cur_syntax_group =~? 'mkdxListItemDone'  || cur_syntax_group =~? 'mkdListItemDone'  || cur_syntax_group =~? 'markdownListDone' || cur_syntax_group =~? 'VimwikiCheckBoxDone')
     let cur_syntax_group = 'mkddListItemDone'
   endif
 
   " ------- folding atx headers ------
-  if (cur_syntax_group =~? 'markdownHeadingDlimiter' || cur_syntax_group =~? 'markdownHead' || cur_syntax_group =~? 'mkdxHead')
+  if (cur_syntax_group =~? 'markdownHeadingDlimiter' || cur_syntax_group =~? 'markdownHead' || cur_syntax_group =~? 'mkdxHead' || cur_syntax_group =~? 'VimwikiHeaderChar')
   " if match(cur_line, s:header_pattern) >= 0
     let s:header_level = strlen(substitute(cur_line, g:mkdd_header_pattern . '.*', '\1', ''))
     return '>' . s:header_level
-  endif
-
-  " ------- empty line -------
-  if match(cur_line, '^\s*$') >= 0
-      return (s:header_level)
   endif
 
   " " ---- net line is list itme ----
@@ -99,13 +94,14 @@ function! fold#FoldLevelOfLine(lnum)
 
   " folding fenced code blocks
   if match(cur_line, '^\s*```') >= 0
-    if nxt_syntax_group ==? 'markdownFencedCodeBlock' || nxt_syntax_group =~? 'mkdCode' || nxt_syntax_group =~? 'mkdSnippet' || nxt_syntax_group =~? 'markdownCode'
+    if nxt_syntax_group ==? 'markdownFencedCodeBlock' || nxt_syntax_group =~? 'mkdCode' || nxt_syntax_group =~? 'mkdSnippet' || nxt_syntax_group =~? 'markdownCode' || nxt_syntax_group =~? 'textSnip' || nxt_syntax_group =~? 'VimwikiPre' || nxt_syntax_group =~? 'Error'
       return '> ' . (s:header_level + 1)
     endif
     return 's1'
   endif
 
-  if cur_syntax_group =~? 'mkdSnippet' || cur_syntax_group =~? 'markdownCode'
+  if (cur_syntax_group =~? 'mkdSnippet' || cur_syntax_group =~? 'markdownCode'  || cur_syntax_group =~? 'Error' || cur_syntax_group =~? 'textSnip' || cur_syntax_group =~? 'VimwikiPre')
+    " && nxt_syntax_group !~? 'textSnipTEX'
     return '='
   endif
 
@@ -123,18 +119,21 @@ function! fold#FoldLevelOfLine(lnum)
   endif
 
   " === Folding Math ===
-  let is_texMathZone_boundry = cur_syntax_group =~? 'texMathZone' || cur_syntax_group =~? 'Delimeter'
+  let is_texMathZone_boundry = cur_syntax_group =~? 'texMathZone' || cur_syntax_group =~? 'Delimeter' || cur_syntax_group =~? 'VimwikiMath'
 
-  if is_texMathZone_boundry && prv_syntax_group !~? 'texMathZone' && nxt_syntax_group =~? 'texMathZone'
-    return 'a1'
+    " return '> ' . (s:header_level + 1)
+
+  if is_texMathZone_boundry && (prv_syntax_group !~? 'texMathZone' || prv_syntax_group !~? 'VimwikiMath' || prv_syntax_group !~? 'textSnipTEX') && (nxt_syntax_group =~? 'texMathZone' || nxt_syntax_group =~? 'textSnipTEX')
+    " return 'a1'
+    return '> ' . (s:header_level + 1)
   endif
 
-  if is_texMathZone_boundry && nxt_syntax_group !~? 'texMathZone' && prv_syntax_group =~? 'texMathZone' && nxt_syntax_group ==? ''
+  if is_texMathZone_boundry && (nxt_syntax_group !~? 'texMathZone' || nxt_syntax_group !~? 'textSnipTEX') && (prv_syntax_group =~? 'texMathZone' || prv_syntax_group =~? 'textSnipTEX')
     " && nxt_syntax_group !~? 'mkdListItem'
     return 's1'
   endif
 
-  if cur_syntax_group =~? 'texMathZone'
+  if cur_syntax_group =~? 'texMathZone' || cur_syntax_group =~? 'textSnipTEX'
     return '='
   endif
 
@@ -150,6 +149,12 @@ function! fold#FoldLevelOfLine(lnum)
   if prv_syntax_group =~? 'htmlComment' && cur_line !~? 'htmlComment'
     return 's1'
   endif
+
+  " ------- empty line -------
+  if match(cur_line, '^\s*$') >= 0
+      return (s:header_level)
+  endif
+
 
   " folding setex headers
   if (match(cur_line, '^.*$') >= 0)
