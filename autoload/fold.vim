@@ -100,7 +100,7 @@ function! fold#FoldLevelOfLine(lnum)
     return 's1'
   endif
 
-  if (cur_syntax_group =~? 'mkdSnippet' || cur_syntax_group =~? 'markdownCode'  || cur_syntax_group =~? 'Error' || cur_syntax_group =~? 'textSnip' || cur_syntax_group =~? 'VimwikiPre')
+  if (cur_syntax_group =~? 'mkdSnippet' || cur_syntax_group =~? 'markdownCode'  || cur_syntax_group =~? 'Error' || cur_syntax_group =~? 'Comment' || cur_syntax_group =~? 'textSnip' || cur_syntax_group =~? 'VimwikiPre')
     " && nxt_syntax_group !~? 'textSnipTEX'
     return '='
   endif
@@ -152,6 +152,10 @@ function! fold#FoldLevelOfLine(lnum)
 
   " ------- empty line -------
   if match(cur_line, '^\s*$') >= 0
+    " TODO: find syntax-group of last not empty line
+    if prv_syntax_group =~? 'textSnip'
+      return '='
+    endif
       return (s:header_level)
   endif
 
