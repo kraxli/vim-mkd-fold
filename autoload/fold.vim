@@ -42,6 +42,13 @@ function! fold#FoldLevelOfLine(lnum)
     let cur_syntax_group = 'mkddListItemDone'
   endif
 
+  " ┌───────────────────────────────────┐
+  " │ folding of makdown title sections │
+  " └───────────────────────────────────┘
+  if match(cur_line, "^--*") >= 0
+    return '0'
+  endif
+
   " ------- folding atx headers ------
   if (cur_syntax_group =~? 'markdownHeadingDlimiter' || cur_syntax_group =~? 'markdownHead' || cur_syntax_group =~? 'mkdxHead' || cur_syntax_group =~? 'VimwikiHeaderChar')
   " if match(cur_line, s:header_pattern) >= 0
