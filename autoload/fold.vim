@@ -45,7 +45,9 @@ function! fold#FoldLevelOfLine(lnum)
   " ┌───────────────────────────────────┐
   " │ folding of makdown title sections │
   " └───────────────────────────────────┘
-  if match(cur_line, "^--*") >= 0
+
+  if match(cur_line, '^-\{2,}') >= 0
+    " getline('.') =~ '^-\{2,}'
     return '0'
   endif
 
