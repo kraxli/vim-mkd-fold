@@ -2,6 +2,7 @@
 " indent('.') / indent(line(.))
 " synIDattr(synID(line('.'), 1, 1), 'name')
 " foldlevel('.') / foldlevel(line('.'))
+
 " help:
 "   http://vimdoc.sourceforge.net/htmldoc/fold.html#folds
 "   http://vimdoc.sourceforge.net/htmldoc/usr_41.html
@@ -34,7 +35,7 @@ function! fold#FoldLevelOfLine(lnum)
   let cur_syntax_group = synIDattr(synID(a:lnum, 1, 1), 'name')
   let nxt_syntax_group = synIDattr(synID(a:lnum + 1, 1, 1), 'name')
 
-  if (cur_syntax_group =~? 'mkdxListItem' ||  cur_syntax_group =~? 'mkdListItem' ||  cur_syntax_group =~? 'markdownList' || cur_syntax_group =~? 'VimwikiListTodo')
+  if (cur_syntax_group =~? 'mkdxListItem' ||  cur_syntax_group =~? 'mkdListItem' ||  cur_syntax_group =~? 'markdownList' || cur_syntax_group =~? 'VimwikiListTodo' || cur_syntax_group =~? 'VimwikiList')
     let cur_syntax_group = 'mkddListItem'
   endif
 
